@@ -1,2 +1,2 @@
 # NetReconAI
-An AI powered network reconnaissance tool that with generating reports.
+An AI powered network reconnaissance tool with generating reports.
