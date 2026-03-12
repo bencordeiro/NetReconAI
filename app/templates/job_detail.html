@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Job Detail</p>
+            <h2>{{ job.job_id }}</h2>
+        </div>
+        <a class="ghost-link" href="/">Back To Dashboard</a>
+    </div>
+
+    <div class="meta-grid">
+        <div>
+            <span class="meta-label">Target</span>
+            <strong>{{ job.request.target }}</strong>
+        </div>
+        <div>
+            <span class="meta-label">Mode</span>
+            <strong>{{ job.request.mode.value }}</strong>
+        </div>
+        {% if job.request.interface %}
+        <div>
+            <span class="meta-label">Interface</span>
+            <strong>{{ job.request.interface }}</strong>
+        </div>
+        {% endif %}
+        {% if job.request.mode.value in ["tshark_capture"] %}
+        <div>
+            <span class="meta-label">Packet Count</span>
+            <strong>{{ job.request.packet_count }}</strong>
+        </div>
+        {% endif %}
+        <div>
+            <span class="meta-label">Created</span>
+            <strong>{{ job.created_at }}</strong>
+        </div>
+        {% if job.result %}
+        <div>
+            <span class="meta-label">Status</span>
+            <strong>{{ job.result.status }}</strong>
+        </div>
+        {% endif %}
+    </div>
+    {% if job.result %}
+    <div class="command-box">{{ " ".join(job.result.command) }}</div>
+    {% endif %}
+</section>
+
+{% if job.report_sections %}
+<section class="panel">
+    <p class="eyebrow">Report View</p>
+    <h2>{% if job.report_metadata.get("profile") == "operation_summary" %}Generated Summary{% else %}Generated Report{% endif %}</h2>
+    <div class="meta-grid compact">
+        <div>
+            <span class="meta-label">Report Source</span>
+            <strong>{{ job.report_metadata.get("source", "unknown") }}</strong>
+        </div>
+        <div>
+            <span class="meta-label">Model</span>
+            <strong>{{ job.report_metadata.get("model", "not used") }}</strong>
+        </div>
+    </div>
+    <div class="report-grid">
+        {% for section_key, section_title in job.report_metadata.get("section_order", []) %}
+        <article>
+            <h3>{{ section_title }}</h3>
+            <p>{{ job.report_sections.get(section_key) }}</p>
+        </article>
+        {% endfor %}
+        {% if job.report_sections.get("tool_observation") %}
+        <article>
+            <h3>Tool Observation</h3>
+            <p>{{ job.report_sections.get("tool_observation") }}</p>
+        </article>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+{% if job.report_metadata.get("parsed_scan") %}
+<section class="panel">
+    <p class="eyebrow">Parsed Summary</p>
+    <h2>Nmap Highlights</h2>
+    <div class="meta-grid compact">
+        <div>
+            <span class="meta-label">Live Hosts</span>
+            <strong>{{ job.report_metadata.get("parsed_scan", {}).get("live_host_count", 0) }}</strong>
+        </div>
+        <div>
+            <span class="meta-label">Open Ports</span>
+            <strong>{{ job.report_metadata.get("parsed_scan", {}).get("open_port_count", 0) }}</strong>
+        </div>
+    </div>
+    {% if job.report_metadata.get("parsed_scan", {}).get("live_hosts") %}
+    <div class="chip-row">
+        {% for host in job.report_metadata.get("parsed_scan", {}).get("live_hosts", []) %}
+        <span class="chip">{{ host }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+{% if job.result %}
+<section class="output-grid">
+    <article class="panel">
+        <p class="eyebrow">Raw Output</p>
+        <h2>stdout</h2>
+        <pre class="output-pane">{{ job.result.stdout or "No stdout captured." }}</pre>
+    </article>
+    <article class="panel">
+        <p class="eyebrow">Error Output</p>
+        <h2>stderr</h2>
+        <pre class="output-pane">{{ job.result.stderr or "No stderr captured." }}</pre>
+    </article>
+</section>
+{% endif %}
+{% endblock %}

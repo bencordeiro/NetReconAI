@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel narrow">
+    <p class="eyebrow">Shared Access Gate</p>
+    <h2>Enter Admin Password</h2>
+    <p class="muted">This first version uses a single shared password instead of a full account system.</p>
+    {% if error %}
+    <div class="error-box">{{ error }}</div>
+    {% endif %}
+    <form action="/unlock" method="post" class="stack">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autofocus>
+        <button type="submit">Unlock Tool</button>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-grid">
+    <article class="panel">
+        <p class="eyebrow">Scan Launcher</p>
+        <h2>Run A Recon Operation</h2>
+        <p class="muted">Operations are backend-defined. Users trigger buttons; the backend owns the final command construction.</p>
+        <form action="/scan" method="post" class="stack">
+            <label for="target">Target</label>
+            <input id="target" name="target" type="text" placeholder="192.168.1.0/24 or 10.0.0.15" required>
+
+            <label for="mode">Operation</label>
+            <select id="mode" name="mode">
+                {% for spec in operation_specs %}
+                <option value="{{ spec.value }}">
+                    {{ spec.label }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="interface">Interface (optional)</label>
+            <input id="interface" name="interface" type="text" placeholder="eth0, wlan0, or any">
+
+            <label for="packet_count">Packet Count (capture modes)</label>
+            <input id="packet_count" name="packet_count" type="number" min="1" max="5000" value="100">
+
+            <button type="submit">Start Operation</button>
+        </form>
+    </article>
+
+    <article class="panel accent">
+        <p class="eyebrow">Planned Flow</p>
+        <h2>Backend-Controlled Pipeline</h2>
+        <ul class="clean-list">
+            <li>1. Admin submits a predefined operation.</li>
+            <li>2. Backend validates and runs the Linux tool.</li>
+            <li>3. Raw stdout/stderr is stored per job.</li>
+            <li>4. Reports are rendered from backend-owned templates.</li>
+            <li>5. LLM analysis can be layered in later without tool calling.</li>
+        </ul>
+        <div class="config-note">
+            <strong>LLM endpoint</strong>
+            <span>{{ llm_settings.base_url }}</span>
+            <strong>Model</strong>
+            <span>{{ llm_settings.model }}</span>
+        </div>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Operations</p>
+            <h2>Available Backend Actions</h2>
+        </div>
+    </div>
+    <div class="operation-grid">
+        {% for spec in operation_specs %}
+        <article class="operation-card">
+            <p class="eyebrow">{{ spec.tool }}</p>
+            <h3>{{ spec.label }}</h3>
+            <p class="muted">{{ spec.description }}</p>
+            {% if spec.root_note %}
+            <p class="warning-note">{{ spec.root_note }}</p>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">History</p>
+            <h2>Recent Jobs</h2>
+        </div>
+    </div>
+    {% if jobs %}
+    <table class="jobs-table">
+        <thead>
+            <tr>
+                <th>Job</th>
+                <th>Target</th>
+                <th>Mode</th>
+                <th>Created</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td><a href="/jobs/{{ job.job_id }}">{{ job.job_id }}</a></td>
+                <td>{{ job.request.target }}</td>
+                <td>{{ job.request.mode.value }}</td>
+                <td>{{ job.created_at }}</td>
+                <td>{% if job.result %}{{ job.result.status }}{% else %}queued{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No jobs have been run yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

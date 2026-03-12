@@ -1,0 +1,17 @@
+{
+  "provider": "openai_compatible",
+  "base_url": "http://127.0.0.1:11434/v1",
+  "model": "llama3.1:8b",
+  "api_key_env": "OPENAI_API_KEY",
+  "timeout_seconds": 120,
+  "detailed_report_prompt_file": "config/prompts/detailed_report_system_prompt.txt",
+  "summary_prompt_file": "config/prompts/summary_system_prompt.txt",
+  "request": {
+    "temperature": 0.2,
+    "max_tokens": 2000
+  },
+  "html_policy": {
+    "allow_model_html_sections": true,
+    "backend_wraps_final_report": true
+  }
+}
