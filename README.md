@@ -59,3 +59,8 @@ Runtime scan artifacts are stored under `data/jobs/<job-id>/`. These contain tar
 ## Notes
 
 - Some actions require elevated privileges (for example `nmap -O`, `tshark`, `arp-scan`).
+
+## Images & Demo
+<img width="1559" height="1239" alt="photo2" src="https://github.com/user-attachments/assets/320e6126-bf74-417e-b801-007e769c51c9" />
+<img width="1549" height="1135" alt="photo1" src="https://github.com/user-attachments/assets/311bf021-0a06-42b9-94e3-f44436469e12" />
+
